@@ -25,3 +25,15 @@ az functionapp create
   --runtime dotnet `
   -g $resourceGroup
 ```
+
+Create a function project locally
+
+```powershell
+func init DemoFunction --dotnet
+```
+
+Create a function inside project locally
+
+```powershell
+func new --name DemoFunction --template "HTTP trigger" --authlevel "anonumous"
+```
