@@ -37,3 +37,8 @@ Create a function inside project locally
 ```powershell
 func new --name DemoFunction --template "HTTP trigger" --authlevel "anonumous"
 ```
+
+Timer function created with command:
+```powershell
+func new --name "TimeTriggerFunction" --template "Timer trigger" --language "csharp"
+```
