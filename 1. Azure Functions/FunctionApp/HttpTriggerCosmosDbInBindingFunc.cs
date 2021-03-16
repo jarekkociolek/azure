@@ -13,13 +13,17 @@ namespace FunctionApp
     {
         [FunctionName("HttpTriggerCosmosDbInBindingFunc")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            //  [CosmosDB(
-            //     databaseName: "func-io-learn-db",
-            //     collectionName: "Bookmarks",
-            //     ConnectionStringSetting = "")] Item item,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+            [CosmosDB(
+                databaseName: "func-io-learn-db",
+                collectionName: "Bookmarks",
+                ConnectionStringSetting = "CosmosDBConnectionString",
+                Id = "{Query.id}",
+                PartitionKey = "{Query.id}")] dynamic bookmark,
             ILogger log)
         {
+            string bookmard = bookmark.ToString();
+            log.LogInformation(bookmard);
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             string name = req.Query["name"];
