@@ -42,3 +42,8 @@ Timer function created with command:
 ```powershell
 func new --name "TimeTriggerFunction" --template "Timer trigger" --language "csharp"
 ```
+
+Http function created with command:
+```powershell
+func new --name 'HttpTriggerFunction' --template 'HTTP trigger' --language 'csharp'
+```

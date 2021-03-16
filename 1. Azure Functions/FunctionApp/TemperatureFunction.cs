@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace DemoFunction
+namespace FunctionApp
 {
     public static class Function
     {
@@ -15,7 +15,7 @@ namespace DemoFunction
         private const string CautionStatus = "CAUTION";
         private const string DangerStatus = "DANGER";
 
-        [FunctionName("Function")]
+        [FunctionName("TemperatureFunction")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
