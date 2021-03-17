@@ -2,7 +2,7 @@ using System.IO;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace FunctionApp
+namespace FunctionApp.TriggerExamples
 {
     public static class BlobTriggerFunction
     {
@@ -13,4 +13,3 @@ namespace FunctionApp
         }
     }
 }
- 
