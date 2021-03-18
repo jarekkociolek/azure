@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using FunctionApp.Models;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace FunctionApp.BindingExamples
 {
@@ -23,18 +24,22 @@ namespace FunctionApp.BindingExamples
                 databaseName: "func-io-learn-db",
                 collectionName: "Bookmarks",
                 ConnectionStringSetting = "CosmosDBConnectionString")] out dynamic newBookmark,
+                [Queue("bookmarks-queue", Connection = "StorageConnectionAppSetting")] out string newMessage,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
+            string requestBody = new StreamReader(req.Body).ReadToEnd();
+            dynamic data = JsonConvert.DeserializeObject(requestBody);
+
             newBookmark = null;
+            newMessage = null;
+
             if (bookmark is null)
             {
-                string id = req.Query["id"];
-                string url = req.Query["url"];
-
-                newBookmark = new { id, url };
-                return new NotFoundObjectResult($"Created: {newBookmark}");
+                newBookmark = new { data.id, data.url };
+                newMessage = JsonConvert.SerializeObject(newBookmark);
+                return new OkObjectResult($"Created db object: {newBookmark} and queue message: {newMessage}");
             }
             else
             {
