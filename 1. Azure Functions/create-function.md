@@ -39,11 +39,20 @@ func new --name DemoFunction --template "HTTP trigger" --authlevel "anonumous"
 ```
 
 Timer function created with command:
+
 ```powershell
 func new --name "TimeTriggerFunction" --template "Timer trigger" --language "csharp"
 ```
 
 Http function created with command:
+
 ```powershell
 func new --name 'HttpTriggerFunction' --template 'HTTP trigger' --language 'csharp'
+```
+
+Publish function from local env to Azure
+Name is EXISTING function app name in Azure
+
+```
+func azure functionapp publish <name>
 ```
