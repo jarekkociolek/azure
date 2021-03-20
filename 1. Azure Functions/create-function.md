@@ -56,3 +56,9 @@ Name is EXISTING function app name in Azure
 ```
 func azure functionapp publish <name>
 ```
+
+Set active subscription in Azure CLI
+
+```powershell
+az account set -s <subscription_id_or_name>
+```
