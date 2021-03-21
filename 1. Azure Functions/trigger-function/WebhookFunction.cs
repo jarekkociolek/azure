@@ -25,6 +25,11 @@ namespace trigger_function
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             name = name ?? data?.name;
 
+            if (data.repository.name != null)
+            {
+                return new OkObjectResult($"Repository is: {data.repository.name}, Event Type is: {req.Headers["x-github-event"]}");
+            }
+
             string responseMessage = string.IsNullOrEmpty(name)
                 ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
