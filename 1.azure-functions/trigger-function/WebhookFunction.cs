@@ -20,7 +20,7 @@ namespace trigger_function
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            if (!IsAuthorized(req, log))
+            if (!(await IsAuthorized(req, log)))
             {
                 return new UnauthorizedResult();
             }
@@ -41,7 +41,7 @@ namespace trigger_function
             return new BadRequestResult();
         }
 
-        private static bool IsAuthorized(HttpRequest request, ILogger log)
+        private static async Task<bool> IsAuthorized(HttpRequest request, ILogger log)
         {
             string githubSignature = request.Headers["x-hub-signature"];
 
@@ -51,18 +51,23 @@ namespace trigger_function
             }
             else
             {
-                var signature = HashHMAC();
+                var signature = await HashHMAC(request.Body);
                 log.LogInformation(Encoding.UTF8.GetString(signature));
                 return String.Equals(githubSignature, Encoding.UTF8.GetString(signature));
             }
         }
 
-        private static byte[] HashHMAC()
+        private static async Task<byte[]> HashHMAC(Stream body)
         {
-            var keyBytes = Encoding.UTF8.GetBytes("sha1");
+            string txt = null;
+            using (var reader = new StreamReader(body))
+            {
+                txt = await reader.ReadToEndAsync();
+            }
+            var keyBytes = Encoding.UTF8.GetBytes("GesphaCjVmcVTtDmd52HaVeARx6yVg9gjJ8ypqZyhOt5DUx1q/ufVQ==");
 
-            var hash = new HMACSHA256(keyBytes);
-            return hash.ComputeHash(Encoding.UTF8.GetBytes("GesphaCjVmcVTtDmd52HaVeARx6yVg9gjJ8ypqZyhOt5DUx1q/ufVQ=="));
+            var hash = new HMACSHA1(keyBytes);
+            return hash.ComputeHash(Encoding.UTF8.GetBytes(txt));
         }
     }
 }
