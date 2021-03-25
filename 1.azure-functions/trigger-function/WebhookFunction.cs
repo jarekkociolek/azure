@@ -20,6 +20,13 @@ namespace trigger_function
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
+            string txt = null;
+            using (var reader = new StreamReader(req.Body))
+            {
+                txt = await reader.ReadToEndAsync();
+            }
+            log.LogError(txt);
+
             if (!(await IsAuthorized(req, log)))
             {
                 return new UnauthorizedResult();
@@ -27,11 +34,8 @@ namespace trigger_function
 
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
-
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
 
             if (data?.repository?.name != null)
             {
@@ -44,6 +48,7 @@ namespace trigger_function
         private static async Task<bool> IsAuthorized(HttpRequest request, ILogger log)
         {
             string githubSignature = request.Headers["x-hub-signature"];
+            var inSignature = githubSignature.Substring("sha1=".Length);
 
             if (githubSignature is null)
             {
@@ -52,8 +57,9 @@ namespace trigger_function
             else
             {
                 var signature = await HashHMAC(request.Body);
-                log.LogInformation(Encoding.UTF8.GetString(signature));
-                return String.Equals(githubSignature, Encoding.UTF8.GetString(signature));
+                var stringSignature = ToHexString(signature);
+                log.LogInformation(stringSignature);
+                return String.Equals(inSignature, stringSignature);
             }
         }
 
@@ -64,10 +70,21 @@ namespace trigger_function
             {
                 txt = await reader.ReadToEndAsync();
             }
-            var keyBytes = Encoding.UTF8.GetBytes("GesphaCjVmcVTtDmd52HaVeARx6yVg9gjJ8ypqZyhOt5DUx1q/ufVQ==");
+            var keyBytes = Encoding.ASCII.GetBytes("GesphaCjVmcVTtDmd52HaVeARx6yVg9gjJ8ypqZyhOt5DUx1q/ufVQ==");
 
             var hash = new HMACSHA1(keyBytes);
-            return hash.ComputeHash(Encoding.UTF8.GetBytes(txt));
+            return hash.ComputeHash(Encoding.ASCII.GetBytes(txt));
+        }
+
+        public static string ToHexString(byte[] bytes)
+        {
+            var builder = new StringBuilder(bytes.Length * 2);
+            foreach (byte b in bytes)
+            {
+                builder.AppendFormat("{0:x2}", b);
+            }
+
+            return builder.ToString();
         }
     }
 }
