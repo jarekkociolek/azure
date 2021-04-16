@@ -15,27 +15,32 @@ namespace ServiceBusQueuePublisher
 
         static async Task Main(string[] args)
         {
-            using IHost host = CreateHostBuilder(args).Build();
             ConfigureServices(new ServiceCollection());
 
             var connectionString = configuration.GetConnectionString("QueueConnectionString");
             var queueName = configuration.GetValue<string>("QueueName");
 
             var queueClient = new QueueClient(connectionString, queueName);
-            var content = "TestQueueMessage";
-            var messageToSend = new Message(Encoding.UTF8.GetBytes(content));
+            Console.WriteLine("Write a message:");
+            Console.WriteLine("");
+            var content = Console.ReadLine();
 
-            try
+            while (content != "exit")
             {
-                await queueClient.SendAsync(messageToSend);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
+                var messageToSend = new Message(Encoding.UTF8.GetBytes(content));
+
+                try
+                {
+                    await queueClient.SendAsync(messageToSend);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                content = Console.ReadLine();
             }
 
             await queueClient.CloseAsync();
-            await host.RunAsync();
         }
 
         static IHostBuilder CreateHostBuilder(string[] args) =>

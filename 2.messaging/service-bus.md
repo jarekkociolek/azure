@@ -32,3 +32,13 @@ az servicebus namespace authorization-rule keys list `
     --output tsv `
     --namespace-name JarekServiceBusFun
 ```
+
+Get count messages from queue
+
+```powershell
+az servicebus queue show `
+>> -g learn-8b34649b-b180-46df-a7b2-7abd42d12688 `
+>> --name salesmessages `
+>> --query messageCount `
+>> --namespace-name JarekServiceBusFun
+```
