@@ -21,3 +21,14 @@ Create topic
 ```powershell
 az servicebus queue create -g <resource_group> --namespace-name JarekServiceBusFun -n salesmessages
 ```
+
+Get Service Bus Connection String
+
+```powershell
+az servicebus namespace authorization-rule keys list `
+    --resource-group learn-8b34649b-b180-46df-a7b2-7abd42d12688 `
+    --name RootManageSharedAccessKey `
+    --query primaryConnectionString `
+    --output tsv `
+    --namespace-name JarekServiceBusFun
+```
